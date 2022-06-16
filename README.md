@@ -1,0 +1,2 @@
+# send_ipv6_address_to_remote
+windows下检测本计算机ipv6地址，并将更新的ipv6地址发到指定邮箱
