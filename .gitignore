@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# dir 不需要提交的目录
+/build
+/dist
+​
+# file 不需要提交的文件
+send_email.spec
+/email.yaml
+/ipv6.yaml

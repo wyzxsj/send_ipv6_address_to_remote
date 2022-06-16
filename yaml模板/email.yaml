@@ -1,0 +1,14 @@
+#邮箱stmp域名
+host_server:
+#发送者邮箱
+sender_mail:
+#授权码
+pwd:
+#目标邮箱
+receivers_mail:
+  - xxxxx@xx.com
+#基础轮询任务周期，默认1秒
+base_time_interval: 1
+#轮询任务周期，默认600，最终600*1=10分钟检测一次ipv6地址
+interval: 600
+
