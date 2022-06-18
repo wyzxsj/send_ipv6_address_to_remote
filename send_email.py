@@ -55,7 +55,6 @@ def refresh_status():
     sender_mail = conf['sender_mail']
     pwd = conf['pwd']
     receivers_mail = conf['receivers_mail']
-    # cc_mail = conf['cc_mail']
     logger.debug("refresh_status(). host_server:{}, sender_mail:{}, pwd:{}, receivers_mail:{}",
                 host_server, sender_mail, pwd, receivers_mail)
 
@@ -142,7 +141,6 @@ def polling_tasks_1():
         result = (ipv6_list_from_os == ipv6_list_from_file)
         logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os:{},"
                      "ipv6_list_from_file:{}", result, ipv6_list_from_os, ipv6_list_from_file)
-        # sz_task(ipv6_list_from_os)
         if not result:
             logger.debug("sz_task_1.ipv6_list_from_os:{}", ipv6_list_from_os)
             logger.debug("sz_task_1.ipv6_list_from_file:{}", ipv6_list_from_file)
@@ -165,6 +163,3 @@ def shedu_task():
 if __name__ == '__main__':
     init()
     shedu_task()
-    # ipv6_list_from_os = get_ipv6_from_os()
-    # send_mail_task(ipv6_list_from_os)
-
