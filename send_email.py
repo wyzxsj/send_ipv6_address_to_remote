@@ -9,6 +9,7 @@ import yaml
 import socket
 
 import os
+import sys
 
 # 添加日志记录
 logger.add("info.log", format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}", level='INFO', rotation="10 MB", encoding='utf-8')
@@ -36,15 +37,19 @@ def init():
     curpath = os.getcwd()
     eamil_yaml_path = os.path.join(curpath, "email.yaml")
     ipv6_yaml_path = os.path.join(curpath, "ipv6.yaml")
-    logger.debug("curpath:{}, eamil_yaml_path:{}", curpath, eamil_yaml_path)
+    logger.debug("init().curpath:{}, eamil_yaml_path:{}", curpath, eamil_yaml_path)
 
     refresh_status()
 
 
 # 从email中刷新状态
 def refresh_status():
-    with open(eamil_yaml_path, mode='r', encoding='utf-8') as emailFile:
-        conf = yaml.safe_load(emailFile)
+    try:
+        with open(eamil_yaml_path, mode='r', encoding='utf-8') as emailFile:
+            conf = yaml.safe_load(emailFile)
+    except FileNotFoundError:
+        logger.error("refresh_status().FileNotFoundError:没有找到文件(eamil.yaml)或读取文件失败")
+        sys.exit()
     global host_server, sender_mail, pwd, receivers_mail, base_time_interval, interval
     host_server = conf['host_server']
     sender_mail = conf['sender_mail']
@@ -73,8 +78,12 @@ def get_ipv6_from_os():
 
 # 获取ipv6.yaml中的ipv6地址
 def get_ipv6_from_file():
-    with open(ipv6_yaml_path, encoding='utf-8') as f:
-        ipv6_from_file = yaml.safe_load(f)
+    try:
+        with open(ipv6_yaml_path, encoding='utf-8') as f:
+            ipv6_from_file = yaml.safe_load(f)
+    except FileNotFoundError:
+        logger.error("get_ipv6_from_file().FileNotFoundError:没有找到文件(ipv6.yaml)或读取文件失败")
+        return []
     ipv6_old_list = ipv6_from_file['ipv6']
 
     return ipv6_old_list
@@ -107,9 +116,9 @@ def send_mail_task(ipv6_list):
         smtp.set_debuglevel(1)
         smtp.login(sender_mail, pwd)
         smtp.sendmail(sender_mail, receivers_mail, msg.as_string())
-        logger.info("邮件发送成功")
+        logger.info("邮件发送成功，ipv6地址：{}")
     except Exception:
-        logger.error("Error: 无法发送邮件")
+        logger.error("Error: 无法发送邮件{}", Exception)
     finally:
         smtp.quit()
 
@@ -131,7 +140,8 @@ def polling_tasks_1():
         ipv6_list_from_os = sorted(ipv6_list_from_os)
         ipv6_list_from_file = sorted(ipv6_list_from_file)
         result = (ipv6_list_from_os == ipv6_list_from_file)
-        logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{}", result)
+        logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os:{},"
+                     "ipv6_list_from_file:{}", result, ipv6_list_from_os, ipv6_list_from_file)
         # sz_task(ipv6_list_from_os)
         if not result:
             logger.debug("sz_task_1.ipv6_list_from_os:{}", ipv6_list_from_os)
@@ -148,6 +158,7 @@ def shedu_task():
     try:
         sheduler.start()
     except (KeyboardInterrupt, SystemExit):
+        logger.error("Error: shedu_task end")
         pass
 
 
