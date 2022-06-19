@@ -115,7 +115,7 @@ def send_mail_task(ipv6_list):
         smtp.set_debuglevel(1)
         smtp.login(sender_mail, pwd)
         smtp.sendmail(sender_mail, receivers_mail, msg.as_string())
-        logger.info("邮件发送成功，ipv6地址：{}")
+        logger.info("邮件发送成功，ipv6地址：{}", ipv6_list)
     except Exception:
         logger.error("Error: 无法发送邮件{}", Exception)
     finally:
