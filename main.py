@@ -17,7 +17,7 @@ pwd = ''  # 授权码
 receivers_mail = []  # 接收者邮箱列表
 cc_mail = []  # 抄送者邮箱列表
 
-#阿里云DDNS需要的信息
+# 阿里云DDNS需要的信息
 accessKeyId = ''
 accessSecret = ''
 domain = ''
