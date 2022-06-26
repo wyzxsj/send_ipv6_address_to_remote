@@ -12,4 +12,4 @@ base_time_interval: 1
 #轮询任务周期，默认600，最终600*1=10分钟检测一次ipv6地址
 interval: 600
 #模式：1、发邮件 2、DDNS 3、发邮件和DDNS
-model: 3
+model: 2
