@@ -131,7 +131,7 @@ dmypy.json
 # dir 不需要提交的目录
 /build
 /dist
-/conf
+#/conf
 
 # file 不需要提交的文件
 send_email.spec
