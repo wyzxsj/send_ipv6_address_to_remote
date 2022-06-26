@@ -142,7 +142,7 @@ send_email.spec
 *_bak
 *.zip
 
-# 不忽略的目录
-!/yaml模板
+# 不忽略的目录或文件
+#!/yaml模板
 #!yaml模板/email.yaml
 #!yaml模板/email.yaml
