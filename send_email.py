@@ -35,8 +35,8 @@ time = 0
 def init():
     global eamil_yaml_path, ipv6_yaml_path
     curpath = os.getcwd()
-    eamil_yaml_path = os.path.join(curpath, "email.yaml")
-    ipv6_yaml_path = os.path.join(curpath, "ipv6.yaml")
+    eamil_yaml_path = os.path.join(curpath, "conf/email.yaml")
+    ipv6_yaml_path = os.path.join(curpath, "conf/ipv6.yaml")
     logger.debug("init().curpath:{}, eamil_yaml_path:{}", curpath, eamil_yaml_path)
 
     refresh_status()

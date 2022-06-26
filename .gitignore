@@ -134,8 +134,8 @@ dmypy.json
 ​
 # file 不需要提交的文件
 send_email.spec
-/email.yaml
-/ipv6.yaml
+/conf/email.yaml
+/conf/ipv6.yaml
 ​
 # log 不需要提交的任意包含后缀名为log的文件
 *.log
