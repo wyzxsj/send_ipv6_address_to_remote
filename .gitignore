@@ -131,14 +131,18 @@ dmypy.json
 # dir 不需要提交的目录
 /build
 /dist
-​
+/conf
+
 # file 不需要提交的文件
 send_email.spec
-/conf/email.yaml
-/conf/ipv6.yaml
-​
-# log 不需要提交的任意包含后缀名为log的文件
+
+# 不需要提交的任意包含后缀名为以下后缀的文件
+*.yaml
 *.log
 *_bak
 *.zip
-​
+
+# 不忽略的目录
+!/yaml模板
+#!yaml模板/email.yaml
+#!yaml模板/email.yaml

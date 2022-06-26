@@ -1,26 +1,20 @@
-from smtplib import SMTP_SSL
-from email.mime.text import MIMEText
-from email.header import Header
 from apscheduler.schedulers.blocking import BlockingScheduler
+import log_con
 
-from loguru import logger
 import yaml
-
 import socket
-
 import os
 import sys
 
-# 添加日志记录
-logger.add("conf/info.log", format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}", level='INFO', rotation="10 MB", encoding='utf-8')
-logger.add("conf/error.log", format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}", level='ERROR', rotation="10 MB", encoding='utf-8')
-logger.add("conf/debug.log", format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}", level='DEBUG', rotation="10 MB", encoding='utf-8')
+import send_email
 
-host_server = ''    # 邮箱stmp域名
-sender_mail = ''    # 发送者邮箱
-pwd = ''    # 授权码
-receivers_mail = []    # 接收者邮箱列表
-cc_mail = []    # 抄送者邮箱列表
+logger = log_con.logger
+
+host_server = ''  # 邮箱stmp域名
+sender_mail = ''  # 发送者邮箱
+pwd = ''  # 授权码
+receivers_mail = []  # 接收者邮箱列表
+cc_mail = []  # 抄送者邮箱列表
 
 eamil_yaml_path = ''
 ipv6_yaml_path = ''
@@ -56,12 +50,12 @@ def refresh_status():
     pwd = conf['pwd']
     receivers_mail = conf['receivers_mail']
     logger.debug("refresh_status(). host_server:{}, sender_mail:{}, pwd:{}, receivers_mail:{}",
-                host_server, sender_mail, pwd, receivers_mail)
+                 host_server, sender_mail, pwd, receivers_mail)
 
     base_time_interval = conf['base_time_interval']
     interval = conf['interval']
     logger.debug("refresh_status(). base_time_interval:{}, interval:{}",
-                base_time_interval, interval)
+                 base_time_interval, interval)
 
 
 # 获取当前系统ipv6地址
@@ -69,7 +63,7 @@ def get_ipv6_from_os():
     addrs = socket.getaddrinfo(socket.gethostname(), None)
     ipv6_new_list = []
     for item in addrs:
-        if (item[4][0].startswith("240e")):
+        if item[4][0].startswith("240e"):
             ipv6_new_list.append(item[4][0])
 
     return ipv6_new_list
@@ -97,42 +91,17 @@ def w_ipv6_to_file(ipv6_new_list):
         yaml.dump(ipv6_dict, f)
 
 
-# 发送ipv6地址到指定邮箱
-def send_mail_task(ipv6_list):
-    logger.debug("send_mail_task(). host_server:{}, sender_mail:{}, pwd:{}, receivers_mail:{}",
-                 host_server, sender_mail, pwd, receivers_mail)
-
-    title = "最新地址"
-    mail_content = '<br>'.join(ipv6_list)
-
-    msg = MIMEText(mail_content, 'html', 'utf-8')
-    msg['Subject'] = Header(title, 'utf-8')
-    msg['From'] = sender_mail
-    msg['To'] = ';'.join(receivers_mail)
-
-    try:
-        smtp = SMTP_SSL(host_server, 465)
-        smtp.set_debuglevel(1)
-        smtp.login(sender_mail, pwd)
-        smtp.sendmail(sender_mail, receivers_mail, msg.as_string())
-        logger.info("邮件发送成功，ipv6地址：{}", ipv6_list)
-    except Exception:
-        logger.error("Error: 无法发送邮件{}", Exception)
-    finally:
-        smtp.quit()
-
-
 # 定时任务
 def polling_tasks_1():
     global time, interval
-    refresh_status();
+    refresh_status()
     logger.debug("sz_task_1.Hello! time:{}, interval:{}", time, interval)
 
     time = time + 1
     if interval <= 0:
         interval = 1
 
-    if (time%interval == 0):
+    if time % interval == 0:
         ipv6_list_from_os = get_ipv6_from_os()
         ipv6_list_from_file = get_ipv6_from_file()
 
@@ -145,7 +114,9 @@ def polling_tasks_1():
             logger.debug("sz_task_1.ipv6_list_from_os:{}", ipv6_list_from_os)
             logger.debug("sz_task_1.ipv6_list_from_file:{}", ipv6_list_from_file)
             w_ipv6_to_file(ipv6_list_from_os)
-            send_mail_task(ipv6_list_from_os)
+            email_message = {'host_server': host_server, 'sender_mail': sender_mail, 'pwd': pwd,
+                       'receivers_mail': receivers_mail}
+            send_email.send_mail_task(ipv6_list_from_os, email_message)
 
 
 # 定时任务
@@ -163,3 +134,4 @@ def shedu_task():
 if __name__ == '__main__':
     init()
     shedu_task()
+
