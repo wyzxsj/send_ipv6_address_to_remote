@@ -134,13 +134,14 @@ dmypy.json
 #/conf
 
 # file 不需要提交的文件
-send_email.spec
+#send_email.spec
 
 # 不需要提交的任意包含后缀名为以下后缀的文件
 *.yaml
 *.log
 *_bak
 *.zip
+*.spec
 
 # 不忽略的目录或文件
 #!/yaml模板

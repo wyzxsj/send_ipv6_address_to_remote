@@ -22,9 +22,9 @@ pip install requests
 
 然后打包exe文件
 
-`pyinstaller -F send_email.py`
+`pyinstaller -F xxxxxxxxx`可参考：https://blog.csdn.net/Rainist/article/details/124102635
 
-2、把dist目录下的exe文件和模板目录下的两个文件拷贝到执行目录conf/
+2、把dist目录下的exe文件执行目录,模板目录下的两个ymal文件拷贝到执行目录下的conf/目录下
 
 3、配置email.yaml文件并执行exe就会自动检测本机ipv6地址，并将更新的ipv6地址发到指定邮箱或进行DDNS解析
 
