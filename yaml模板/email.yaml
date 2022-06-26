@@ -6,7 +6,7 @@ sender_mail:
 pwd:
 #目标邮箱
 receivers_mail:
-  - xxxxx@xx.com
+  - xxxxxx@xxxxx.com
 #基础轮询任务周期，默认1秒
 base_time_interval: 1
 #轮询任务周期，默认600，最终600*1=10分钟检测一次ipv6地址
@@ -15,8 +15,9 @@ interval: 600
 accessKeyId:
 accessSecret:
 #自己申请的主域名(假设域名为xxx.yyy.zzz)
-domain: "yyy.zzz"
+domain: yyy.zzz
 #要进行ipv6解析的子域名
-name_ipv6: "xxx"
+name_ipv6: xxx
 #模式：1、发邮件 2、DDNS 3、发邮件和DDNS
 model: 3
+
