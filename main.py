@@ -116,7 +116,7 @@ def check_ipv6(ipv6_list_from_os, ipv6_list_from_file):
         return False
     if ipv6_list_from_file == ipv6_list_from_os:
         return True
-    return False;
+    return False
 
 
 # 定时任务
@@ -165,10 +165,6 @@ def polling_tasks_1():
             w_ipv6_to_file(ipv6_list_from_os)
 
 
-
-
-
-
 # 定时任务
 def shedu_task():
     logger.debug("shedu_task start")
@@ -184,6 +180,3 @@ def shedu_task():
 if __name__ == '__main__':
     init()
     shedu_task()
-    # ddns_message = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
-    #                 'name_ipv6': name_ipv6}
-    # aliyun_ddns.ddns_ipv6(ddns_message)
