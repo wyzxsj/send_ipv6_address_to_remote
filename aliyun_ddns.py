@@ -32,12 +32,23 @@ def add(record_id, rr, ip_type, value):  # 添加新的域名解析记录
     response = client.do_action_with_exception(request)
 
 
-def ddns_ipv6(ddns_message):
+def ddns_ipv6s(ddns_message_ipv6s):
+    accessKeyId = ddns_message_ipv6s['accessKeyId']
+    accessSecret = ddns_message_ipv6s['accessSecret']
+    domain = ddns_message_ipv6s['domain']
+    name_ipv6s = ddns_message_ipv6s['name_ipv6s']
+    for name_ipv6 in name_ipv6s:
+        ddns_message_ipv6 = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
+                        'name_ipv6': name_ipv6}
+        ddns_ipv6(ddns_message_ipv6)
+
+
+def ddns_ipv6(ddns_message_ipv6):
     global client
-    accessKeyId = ddns_message['accessKeyId']
-    accessSecret = ddns_message['accessSecret']
-    domain = ddns_message['domain']
-    name_ipv6 = ddns_message['name_ipv6']
+    accessKeyId = ddns_message_ipv6['accessKeyId']
+    accessSecret = ddns_message_ipv6['accessSecret']
+    domain = ddns_message_ipv6['domain']
+    name_ipv6 = ddns_message_ipv6['name_ipv6']
     client = AcsClient(accessKeyId, accessSecret, 'cn-hangzhou')
 
     request = DescribeSubDomainRecordsRequest()

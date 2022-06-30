@@ -3,10 +3,20 @@ windows下检测本计算机ipv6地址，并将更新的ipv6地址发到指定�
 
 
 #安装必要的库和阿里云的SDK
-pip install aliyun-python-sdk-core-v3
-pip install aliyun-python-sdk-domain
-pip install aliyun-python-sdk-alidns
-pip install requests
+
+pip3 install apscheduler
+
+pip3 install pyyaml
+
+pip3 install loguru
+
+pip3 install aliyun-python-sdk-core-v3
+
+pip3 install aliyun-python-sdk-domain
+
+pip3 install aliyun-python-sdk-alidns
+
+pip3 install requests
 
 
 # 源码使用方式
@@ -18,7 +28,7 @@ pip install requests
 #windows下打包发布成exe文件
 1、使用pyinstaller工具将py文件打包成exe文件
 
-`pip install pyinstaller`
+`pip3 install pyinstaller`
 
 然后打包exe文件
 

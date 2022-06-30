@@ -21,7 +21,7 @@ cc_mail = []  # 抄送者邮箱列表
 accessKeyId = ''
 accessSecret = ''
 domain = ''
-name_ipv6 = ''
+name_ipv6s = ''
 
 # 配置文件目录
 eamil_yaml_path = ''
@@ -54,7 +54,7 @@ def refresh_status():
         logger.error("refresh_status().FileNotFoundError:没有找到文件(eamil.yaml)或读取文件失败")
         sys.exit()
     global host_server, sender_mail, pwd, receivers_mail, base_time_interval, interval, model
-    global accessKeyId, accessSecret, domain, name_ipv6
+    global accessKeyId, accessSecret, domain, name_ipv6s
 
     host_server = conf['host_server']
     sender_mail = conf['sender_mail']
@@ -66,9 +66,9 @@ def refresh_status():
     accessKeyId = conf['accessKeyId']
     accessSecret = conf['accessSecret']
     domain = conf['domain']
-    name_ipv6 = conf['name_ipv6']
-    logger.debug("refresh_status(). accessKeyId:{}, accessSecret:{}, domain:{}, name_ipv6:{}",
-                 accessKeyId, accessSecret, domain, name_ipv6)
+    name_ipv6s = conf['name_ipv6s']
+    logger.debug("refresh_status(). accessKeyId:{}, accessSecret:{}, domain:{}, name_ipv6s:{}",
+                 accessKeyId, accessSecret, domain, name_ipv6s)
 
     model = conf['model']
     base_time_interval = conf['base_time_interval']
@@ -147,17 +147,17 @@ def polling_tasks_1():
                                  'receivers_mail': receivers_mail}
                 send_email.send_mail_task(ipv6_list_from_os, email_message)
             elif model == 2:
-                ddns_message = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
-                                'name_ipv6': name_ipv6}
-                aliyun_ddns.ddns_ipv6(ddns_message)
+                ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
+                                'name_ipv6s': name_ipv6s}
+                aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
             elif model == 3:
                 email_message = {'host_server': host_server, 'sender_mail': sender_mail, 'pwd': pwd,
                                  'receivers_mail': receivers_mail}
                 send_email.send_mail_task(ipv6_list_from_os, email_message)
 
-                ddns_message = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
-                                'name_ipv6': name_ipv6}
-                aliyun_ddns.ddns_ipv6(ddns_message)
+                ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
+                                'name_ipv6s': name_ipv6s}
+                aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
             else:
                 logger.error("模式选择错误，未执行任何更新ipv6操作")
                 return
