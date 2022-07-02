@@ -84,7 +84,8 @@ def get_ipv6_from_os():
     for item in addrs:
         if item[4][0].startswith("240e"):
             ipv6_new_list.append(item[4][0])
-
+    if len(ipv6_new_list) > 2:
+        return get_ipv6_from_file()
     return ipv6_new_list
 
 
@@ -139,29 +140,23 @@ def polling_tasks_1():
         logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os:{},"
                      "ipv6_list_from_file:{}", result, ipv6_list_from_os, ipv6_list_from_file)
         if not result:
-            logger.debug("sz_task_1.ipv6_list_from_os:{}", ipv6_list_from_os)
-            logger.debug("sz_task_1.ipv6_list_from_file:{}", ipv6_list_from_file)
-
+            email_message = {'host_server': host_server, 'sender_mail': sender_mail, 'pwd': pwd,
+                             'receivers_mail': receivers_mail}
+            ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
+                                  'name_ipv6s': name_ipv6s}
             if model == 1:
-                email_message = {'host_server': host_server, 'sender_mail': sender_mail, 'pwd': pwd,
-                                 'receivers_mail': receivers_mail}
                 send_email.send_mail_task(ipv6_list_from_os, email_message)
             elif model == 2:
-                ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
-                                'name_ipv6s': name_ipv6s}
-                aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
+                ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
             elif model == 3:
-                email_message = {'host_server': host_server, 'sender_mail': sender_mail, 'pwd': pwd,
-                                 'receivers_mail': receivers_mail}
                 send_email.send_mail_task(ipv6_list_from_os, email_message)
-
-                ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
-                                'name_ipv6s': name_ipv6s}
-                aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
+                ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
             else:
                 logger.error("模式选择错误，未执行任何更新ipv6操作")
                 return
 
+            if not ddns_result:
+                logger.error("Error: ddns失败")
             w_ipv6_to_file(ipv6_list_from_os)
 
 
