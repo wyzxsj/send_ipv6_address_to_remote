@@ -32,7 +32,7 @@ pip3 install requests
 
 然后打包exe文件
 
-`pyinstaller -F xxxxxxxxx`可参考：https://blog.csdn.net/Rainist/article/details/124102635
+`pyinstaller xxxxxxxxx`可参考：https://blog.csdn.net/Rainist/article/details/124102635
 
 2、把dist目录下的exe文件执行目录,模板目录下的两个ymal文件拷贝到执行目录下的conf/目录下
 
