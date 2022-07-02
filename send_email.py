@@ -32,5 +32,5 @@ def send_mail_task(ipv6_list, email_message):
     except Exception:
         logger.error("Error: 无法发送邮件{}", Exception)
     finally:
+        logger.debug("smtp.quit()")
         smtp.quit()
-

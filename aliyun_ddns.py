@@ -40,7 +40,11 @@ def ddns_ipv6s(ddns_message_ipv6s):
     for name_ipv6 in name_ipv6s:
         ddns_message_ipv6 = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
                         'name_ipv6': name_ipv6}
-        ddns_ipv6(ddns_message_ipv6)
+        try:
+            ddns_ipv6(ddns_message_ipv6)
+        except Exception:
+            logger.error("Error: ddns获取本机对外ipv6地址失败:{}", Exception)
+            return False
 
 
 def ddns_ipv6(ddns_message_ipv6):
@@ -58,8 +62,11 @@ def ddns_ipv6(ddns_message_ipv6):
     request.set_Type("AAAA")
     response = client.do_action_with_exception(request)  # 获取域名解析记录列表
     domain_list = json.loads(response)  # 将返回的JSON数据转化为Python能识别的
-
-    ip = urlopen('https://api-ipv6.ip.sb/ip').read()  # 使用IP.SB的接口获取ipv6地址
+    try:
+        ip = urlopen('https://api-ipv6.ip.sb/ip').read()  # 使用IP.SB的接口获取ipv6地址
+    except Exception:
+        logger.error("Error: ddns获取本机对外ipv6地址失败:{}", Exception)
+        return False
     ipv6 = str(ip, encoding='utf-8')
     logger.debug("get_domain_message(). accessKeyId:{}, accessSecret:{}, domain:{}, name_ipv6:{}, ipv6{}",
                  accessKeyId, accessSecret, domain, name_ipv6, ipv6)

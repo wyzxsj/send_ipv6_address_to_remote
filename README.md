@@ -4,6 +4,8 @@ windows下检测本计算机ipv6地址，并将更新的ipv6地址发到指定�
 
 #安装必要的库和阿里云的SDK
 
+pip3 install psutil
+
 pip3 install apscheduler
 
 pip3 install pyyaml

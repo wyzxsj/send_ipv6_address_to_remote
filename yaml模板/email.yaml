@@ -14,10 +14,12 @@ interval: 600
 #阿里云上获取自己的accessKeyId、accessSecret
 accessKeyId:
 accessSecret:
-#自己申请的主域名(假设域名为xxx.yyy.zzz)
+#自己申请的主域名(假设域名为xxx.yyy.zzz,ppp.yyy.zzz)
 domain: yyy.zzz
-#要进行ipv6解析的子域名
-name_ipv6: xxx
+#要进行ipv6解析的子域名(可填多个)
+name_ipv6:
+  -xxx
+  -ppp
 #模式：1、发邮件 2、DDNS 3、发邮件和DDNS
 model: 3
 
