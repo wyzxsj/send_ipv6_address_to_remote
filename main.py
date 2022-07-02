@@ -84,8 +84,9 @@ def get_ipv6_from_os():
     for item in addrs:
         if item[4][0].startswith("240e"):
             ipv6_new_list.append(item[4][0])
-    if len(ipv6_new_list) > 2:
-        return get_ipv6_from_file()
+    # if len(ipv6_new_list) > 2:
+    #     logger.error("ERROR: 系统ipv6地址异常，建议重启网卡")
+    #     return get_ipv6_from_file()
     return ipv6_new_list
 
 
@@ -156,7 +157,7 @@ def polling_tasks_1():
                 return
 
             if not ddns_result:
-                logger.error("Error: ddns失败")
+                logger.error("Error: ddns失败，建议重启网卡")
             w_ipv6_to_file(ipv6_list_from_os)
 
 
