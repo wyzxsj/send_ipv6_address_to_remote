@@ -1,13 +1,15 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 import log_con
+import time
 
 import yaml
-import socket
+
 import os
 import sys
 
 import send_email
 import aliyun_ddns
+import util.get_ipv6_from_local
 
 logger = log_con.logger
 # 发邮件需要的信息
@@ -31,7 +33,7 @@ base_time_interval = 9999
 interval = 999
 model = 3
 
-time = 0
+times = 0
 
 
 # 初始化状态
@@ -77,39 +79,34 @@ def refresh_status():
                  base_time_interval, interval, model)
 
 
-# 获取当前系统ipv6地址
-def get_ipv6_from_os():
-    addrs = socket.getaddrinfo(socket.gethostname(), None)
-    ipv6_new_list = []
-    for item in addrs:
-        if item[4][0].startswith("240e"):
-            ipv6_new_list.append(item[4][0])
-    # if len(ipv6_new_list) > 2:
-    #     logger.error("ERROR: 系统ipv6地址异常，建议重启网卡")
-    #     return get_ipv6_from_file()
-    return ipv6_new_list
-
-
 # 获取ipv6.yaml中的ipv6地址
 def get_ipv6_from_file():
+    ipv6_old_dic = {}
     try:
         with open(ipv6_yaml_path, encoding='utf-8') as f:
             ipv6_from_file = yaml.safe_load(f)
     except FileNotFoundError:
         logger.error("get_ipv6_from_file().FileNotFoundError:没有找到文件(ipv6.yaml)或读取文件失败")
         return []
-    ipv6_old_list = ipv6_from_file['ipv6']
+    if not ipv6_from_file['ipv6']:
+        return None
+    for line in ipv6_from_file['ipv6']:
+        for key in line:
+            ipv6_old_dic[key] = line[key]
 
-    return ipv6_old_list
+    return ipv6_old_dic
 
 
 # 更新ipv6.yaml中的ipv6地址
-def w_ipv6_to_file(ipv6_new_list):
+def w_ipv6_to_file(ipv6_old_dic):
+    ipv6_new_list = []
+    for key in ipv6_old_dic:
+        ipv6_new_list.append({key: ipv6_old_dic[key]})
     ipv6_dict = {'ipv6': ipv6_new_list}
     logger.debug("start write ipv6:{}", ipv6_new_list)
     # 写入到yaml文件
     with open(ipv6_yaml_path, "w", encoding="utf-8") as f:
-        yaml.dump(ipv6_dict, f)
+        yaml.dump(ipv6_dict, f, allow_unicode=True)
 
 
 # 比较ipv6地址列表
@@ -123,42 +120,53 @@ def check_ipv6(ipv6_list_from_os, ipv6_list_from_file):
 
 # 定时任务
 def polling_tasks_1():
-    global time, interval
+    global times, interval
     refresh_status()
     logger.debug("sz_task_1.Hello! time:{}, interval:{}", time, interval)
 
-    time = time + 1
+    times = times + 1
     if interval <= 0:
         interval = 1
 
-    if time % interval == 0:
-        ipv6_list_from_os = get_ipv6_from_os()
-        ipv6_list_from_file = get_ipv6_from_file()
-
-        ipv6_list_from_os = sorted(ipv6_list_from_os)
-        ipv6_list_from_file = sorted(ipv6_list_from_file)
-        result = check_ipv6(ipv6_list_from_os, ipv6_list_from_file)
-        logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os:{},"
-                     "ipv6_list_from_file:{}", result, ipv6_list_from_os, ipv6_list_from_file)
+    if times % interval == 0:
+        ipv6_dic_from_os = util.get_ipv6_from_local.get_ipv6_from_os_v2()
+        time.sleep(1)
+        ipv6_dic_from_file = get_ipv6_from_file()
+        if not ipv6_dic_from_file:
+            result = False
+        else:
+            ipv6_list_from_os_com = sorted(ipv6_dic_from_os.items(), key=lambda kv: (kv[0], kv[1]))
+            ipv6_list_from_file_com = sorted(ipv6_dic_from_file.items(), key=lambda kv: (kv[0], kv[1]))
+            result = check_ipv6(ipv6_list_from_os_com, ipv6_list_from_file_com)
+            logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os_com:{},"
+                         "ipv6_list_from_file_com:{}", result, ipv6_list_from_os_com, ipv6_list_from_file_com)
         if not result:
+            ipv6_list_from_os = []
+            for key in ipv6_dic_from_os:
+                ipv6_list_from_os.append(key+": "+ipv6_dic_from_os[key])
             email_message = {'host_server': host_server, 'sender_mail': sender_mail, 'pwd': pwd,
                              'receivers_mail': receivers_mail}
             ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
                                   'name_ipv6s': name_ipv6s}
+            try:
+                ipv6 = ipv6_dic_from_os['临时']
+            except Exception:
+                logger.error("Error: 本地临时ipv6地址获取失败:{}", Exception)
+                ipv6 = None
             if model == 1:
                 send_email.send_mail_task(ipv6_list_from_os, email_message)
             elif model == 2:
-                ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
+                ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s, ipv6)
             elif model == 3:
                 send_email.send_mail_task(ipv6_list_from_os, email_message)
-                ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s)
+                ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s, ipv6)
             else:
                 logger.error("模式选择错误，未执行任何更新ipv6操作")
                 return
 
             if not ddns_result:
                 logger.error("Error: ddns失败，建议重启网卡")
-            w_ipv6_to_file(ipv6_list_from_os)
+            w_ipv6_to_file(ipv6_dic_from_os)
 
 
 # 定时任务
@@ -176,3 +184,32 @@ def shedu_task():
 if __name__ == '__main__':
     init()
     shedu_task()
+    # ipv6_dic_from_os = util.get_ipv6_from_local.get_ipv6_from_os_v2()
+    # time.sleep(1)
+    # ipv6_dic_from_file = get_ipv6_from_file()
+    # if not ipv6_dic_from_file:
+    #     result = False
+    # else:
+    #     ipv6_list_from_os_com = sorted(ipv6_dic_from_os.items(), key=lambda kv: (kv[0], kv[1]))
+    #     ipv6_list_from_file_com = sorted(ipv6_dic_from_file.items(), key=lambda kv: (kv[0], kv[1]))
+    #     result = check_ipv6(ipv6_list_from_os_com, ipv6_list_from_file_com)
+    #     logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os_com:{},"
+    #                  "ipv6_list_from_file_com:{}", result, ipv6_list_from_os_com, ipv6_list_from_file_com)
+    # if not result:
+    #     ipv6_list_from_os = []
+    #     for key in ipv6_dic_from_os:
+    #         ipv6_list_from_os.append(key + ": " + ipv6_dic_from_os[key])
+    #     print(ipv6_list_from_os)
+    #     w_ipv6_to_file(ipv6_dic_from_os)
+
+
+
+    # ipv6_dic_from_os = {}
+    # ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
+    #                       'name_ipv6s': name_ipv6s}
+    # try:
+    #     ipv6 = ipv6_dic_from_os['临时']
+    # except Exception:
+    #     logger.error("Error: 本地临时ipv6地址获取失败")
+    #     ipv6 = None
+    # ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s, ipv6)
