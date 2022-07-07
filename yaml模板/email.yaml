@@ -6,18 +6,20 @@ sender_mail:
 pwd:
 #目标邮箱
 receivers_mail:
-  - xxxxxx@xxxxx.com
-#基础轮询任务周期，默认1秒
+  -
+#基础轮询任务周期，示例1秒（程序启动后修改无用）
 base_time_interval: 1
-#轮询任务周期，默认600，最终600*1=10分钟检测一次ipv6地址
+#轮询任务周期，示例600，最终600*1=10分钟检测一次ipv6地址
 interval: 600
 #阿里云上获取自己的accessKeyId、accessSecret
 accessKeyId:
 accessSecret:
 #自己申请的主域名(假设域名为xxx.yyy.zzz)
-domain: yyy.zzz
+domain:
 #要进行ipv6解析的子域名
-name_ipv6: xxx
+name_ipv6s:
+  - www
+
 #模式：1、发邮件 2、DDNS 3、发邮件和DDNS
 model: 3
 
