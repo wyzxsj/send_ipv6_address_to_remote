@@ -122,7 +122,7 @@ def check_ipv6(ipv6_list_from_os, ipv6_list_from_file):
 def polling_tasks_1():
     global times, interval
     refresh_status()
-    logger.debug("sz_task_1.Hello! time:{}, interval:{}", time, interval)
+    logger.debug("sz_task_1.Hello! times:{}, interval:{}", times, interval)
 
     times = times + 1
     if interval <= 0:
