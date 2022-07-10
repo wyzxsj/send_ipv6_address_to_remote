@@ -184,32 +184,3 @@ def shedu_task():
 if __name__ == '__main__':
     init()
     shedu_task()
-    # ipv6_dic_from_os = util.get_ipv6_from_local.get_ipv6_from_os_v2()
-    # time.sleep(1)
-    # ipv6_dic_from_file = get_ipv6_from_file()
-    # if not ipv6_dic_from_file:
-    #     result = False
-    # else:
-    #     ipv6_list_from_os_com = sorted(ipv6_dic_from_os.items(), key=lambda kv: (kv[0], kv[1]))
-    #     ipv6_list_from_file_com = sorted(ipv6_dic_from_file.items(), key=lambda kv: (kv[0], kv[1]))
-    #     result = check_ipv6(ipv6_list_from_os_com, ipv6_list_from_file_com)
-    #     logger.debug("sz_task_1.ipv6_list_from_os == ipv6_list_from_file:{},ipv6_list_from_os_com:{},"
-    #                  "ipv6_list_from_file_com:{}", result, ipv6_list_from_os_com, ipv6_list_from_file_com)
-    # if not result:
-    #     ipv6_list_from_os = []
-    #     for key in ipv6_dic_from_os:
-    #         ipv6_list_from_os.append(key + ": " + ipv6_dic_from_os[key])
-    #     print(ipv6_list_from_os)
-    #     w_ipv6_to_file(ipv6_dic_from_os)
-
-
-
-    # ipv6_dic_from_os = {}
-    # ddns_message_ipv6s = {'accessKeyId': accessKeyId, 'accessSecret': accessSecret, 'domain': domain,
-    #                       'name_ipv6s': name_ipv6s}
-    # try:
-    #     ipv6 = ipv6_dic_from_os['临时']
-    # except Exception:
-    #     logger.error("Error: 本地临时ipv6地址获取失败")
-    #     ipv6 = None
-    # ddns_result = aliyun_ddns.ddns_ipv6s(ddns_message_ipv6s, ipv6)
