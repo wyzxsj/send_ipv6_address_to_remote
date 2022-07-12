@@ -75,13 +75,13 @@ def ddns_ipv6(ddns_message_ipv6, ipv6):
                  accessKeyId, accessSecret, domain, name_ipv6, ipv6)
     if domain_list['TotalCount'] == 0:
         add(domain, name_ipv6, "AAAA", ipv6)
-        logger.info("新建域名{}解析成功", domain)
+        logger.info("新建域名{}解析成功", name_ipv6)
     elif domain_list['TotalCount'] == 1:
         if domain_list['DomainRecords']['Record'][0]['Value'].strip() != ipv6.strip():
             update(domain_list['DomainRecords']['Record'][0]['RecordId'], name_ipv6, "AAAA", ipv6)
-            logger.info("修改域名{}解析成功", domain)
+            logger.info("修改域名{}解析成功", name_ipv6)
         else:  # https://blog.zeruns.tech
-            logger.info("域名{}IPv6地址没变", domain)
+            logger.info("域名{}IPv6地址没变", name_ipv6)
     elif domain_list['TotalCount'] > 1:
         from aliyunsdkalidns.request.v20150109.DeleteSubDomainRecordsRequest import DeleteSubDomainRecordsRequest
         request = DeleteSubDomainRecordsRequest()
@@ -91,5 +91,5 @@ def ddns_ipv6(ddns_message_ipv6, ipv6):
         request.set_Type("AAAA")
         response = client.do_action_with_exception(request)
         add(domain, name_ipv6, "AAAA", ipv6)
-        logger.info("修改域名{}解析成功", domain)
+        logger.info("修改域名{}解析成功", name_ipv6)
     return True
